@@ -1,0 +1,32 @@
+- action:
+  - data_template:
+      entity_id: climate.thermo_poele
+      temperature: '{{ states.calendar.poele.attributes.message | replace(" #heat","")
+        | float}}'
+    service: climate.set_temperature
+  - data:
+      entity_id: climate.thermo_poele
+      operation_mode: 'heat'
+    service: climate.set_operation_mode
+  alias: Allumage Poele
+  condition: []
+  id: on_poele_by_calendar
+  trigger:
+  - entity_id: calendar.poele
+    from: 'off'
+    platform: state
+    to: 'on'
+
+- action:
+  - data:
+      entity_id: climate.thermo_poele
+      operation_mode: 'off'
+    service: climate.set_operation_mode
+  alias: Extinction Poele
+  condition: []
+  id: off_poele_by_calendar
+  trigger:
+  - entity_id: calendar.poele
+    from: 'on'
+    platform: state
+    to: 'off'

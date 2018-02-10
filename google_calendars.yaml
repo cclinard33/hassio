@@ -1,0 +1,42 @@
+- cal_id: ugi6i5eb075n2q0t0omu1dn1m4@group.calendar.google.com
+  entities:
+  - device_id: poele
+    name: Poele
+    track: true
+    search: "#heat"
+    
+- cal_id: nystedric@gmail.com
+  entities:
+  - device_id: famille_clinard
+    name: Famille CLINARD
+    track: false
+
+- cal_id: cedric.clinard@gmail.com
+  entities:
+  - device_id: cedricclinardgmailcom
+    name: cedric.clinard@gmail.com
+    track: false
+
+- cal_id: kfpecqmnh8aitv7rk62vo7s9r8@group.calendar.google.com
+  entities:
+  - device_id: perso
+    name: Perso
+    track: false
+
+- cal_id: '#contacts@group.v.calendar.google.com'
+  entities:
+  - device_id: contacts
+    name: Contacts
+    track: false
+
+- cal_id: fr.french#holiday@group.v.calendar.google.com
+  entities:
+  - device_id: jours_feries_en_france
+    name: "Jours f\xE9ri\xE9s en France"
+    track: false
+
+- cal_id: e_2_fr#weeknum@group.v.calendar.google.com
+  entities:
+  - device_id: week_numbers
+    name: Week Numbers
+    track: false

@@ -1,0 +1,8 @@
+sensor.ext_temperature:
+  friendly_name: Ext. Temp.
+sensor.int_temperature:
+  friendly_name: Int. Temp.
+sun.sun:
+  friendly_name: Jour/Nuit
+sensor.yr_symbol:
+  friendly_name: Météo

@@ -1,0 +1,120 @@
+homeassistant:
+  # Name of the location where Home Assistant is running
+  name: Home
+  # Location required to calculate the time the sun rises and sets
+  latitude: 44.8087
+  longitude: -0.7857
+  # Impacts weather/sunrise data (altitude above sea level in meters)
+  elevation: 45
+  # metric for Metric, imperial for Imperial
+  unit_system: metric
+  # Pick yours from here: http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+  time_zone: Europe/Paris
+  # Customization file
+  customize: !include customize.yaml
+
+# Show links to resources in log and frontend
+# introduction:
+
+# Enables the frontend
+frontend:
+
+# Enables configuration UI
+config:
+
+http:
+  base_url: https://home.naniecuisine.com:8123
+  api_password: !secret http_password
+  ssl_certificate: /ssl/fullchain.pem
+  ssl_key: /ssl/privkey.pem
+  # Secrets are defined in the file secrets.yaml
+  # api_password: !secret http_password
+  # Uncomment this if you are using SSL/TLS, running in Docker container, etc.
+  # base_url: example.duckdns.org:8123
+
+# Checks for available updates
+# Note: This component will send some information about your system to
+# the developers to assist with development of Home Assistant.
+# For more information, please see:
+# https://home-assistant.io/blog/2016/10/25/explaining-the-updater/
+updater:
+  # Optional, allows Home Assistant developers to focus on popular components.
+  # include_used_components: true
+
+# Discover some devices automatically
+discovery:
+
+# Allows you to issue voice commands from the frontend in enabled browsers
+conversation:
+
+# Enables support for tracking state changes over time
+history:
+
+# View all events in a logbook
+logbook:
+
+# Enables a map showing the location of tracked devices
+map:
+
+# Track the sun
+sun:
+
+# Text to speech
+tts:
+  - platform: google
+
+# Cloud
+# cloud:
+
+rest_command:
+  poele_on:
+    url: !secret esp_poele_on
+  poele_off:
+    url: !secret esp_poele_off
+
+binary_sensor:
+  - platform: rest
+    resource: !secret esp_poele_status
+    name: "Poele"
+    value_template: '{{ value_json.state }}'
+    scan_interval: 60
+
+switch:
+  - platform: template
+    switches:
+      poele:
+        friendly_name: "Poele"
+        value_template: "{{ is_state('binary_sensor.poele', 'on') }}"
+        turn_on:
+          service: rest_command.poele_on
+          data:
+            entity_id: switch.poele_toggle
+        turn_off:
+          service: rest_command.poele_off
+          data:
+            entity_id: switch.poele_toggle
+
+google:
+  client_id: !secret google_id
+  client_secret: !secret google_secret
+
+climate:
+  - platform: generic_thermostat
+    name: thermo_poele
+    heater: switch.poele
+    target_sensor: sensor.int_temperature
+    min_temp: 12
+    max_temp: 24
+    ac_mode: False
+    target_temp: 17
+    cold_tolerance: 0.5
+    hot_tolerance: 0.5
+    min_cycle_duration:
+      hours: 1
+    initial_operation_mode: "off"
+    away_temp: 7
+
+group: !include groups.yaml
+automation: !include automations.yaml
+script: !include scripts.yaml
+sensor: !include sensors.yaml

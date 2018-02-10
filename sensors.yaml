@@ -1,0 +1,25 @@
+- platform: rest
+  resource: !secret esp_poele_temp
+  name: "Ext. Temperature"
+  value_template: '{{ float(value_json.temperature) }}'
+  unit_of_measurement: "°C"
+  scan_interval: 300
+#- platform: yr
+- platform: onewire
+  names:
+      28-80000003e85b: "Int."
+  scan_interval: 300
+- platform: yweather
+  forecast: 0
+  name: yw_day0
+  monitored_conditions:
+    - weather
+    - temp_min
+    - temp_max
+- platform: yweather
+  forecast: 1
+  name: yw_day1
+  monitored_conditions:
+    - weather
+    - temp_min
+    - temp_max
