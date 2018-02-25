@@ -6,16 +6,22 @@
     service: climate.set_temperature
   - data:
       entity_id: climate.thermo_poele
-      operation_mode: 'heat'
+      operation_mode: heat
     service: climate.set_operation_mode
   alias: Allumage Poele
-  condition: []
+  condition:
+  - condition: state
+    entity_id: calendar.poele
+    state: 'on'
   id: on_poele_by_calendar
-  trigger:
+  trigger:  
   - entity_id: calendar.poele
     from: 'off'
     platform: state
     to: 'on'
+  - platform: time
+    minutes: '/5'
+    seconds: 00
 
 - action:
   - data:
@@ -23,10 +29,16 @@
       operation_mode: 'off'
     service: climate.set_operation_mode
   alias: Extinction Poele
-  condition: []
+  condition:
+    - condition: state
+      entity_id: calendar.poele
+      state: 'off'
   id: off_poele_by_calendar
   trigger:
   - entity_id: calendar.poele
     from: 'on'
     platform: state
     to: 'off'
+  - platform: time
+    minutes: '/5'
+    seconds: 00

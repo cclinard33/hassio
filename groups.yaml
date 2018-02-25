@@ -1,0 +1,26 @@
+poele:
+  name: Poêle
+  view: false
+  icon: mdi:camera
+  entities:
+    - binary_sensor.poele
+    - calendar.poele
+    - climate.thermo_poele
+    - switch.poele
+meteo_0:
+  name: Aujourd'hui
+  view: false
+  icon: mdi:camera
+  entities:
+    - sensor.dark_sky_icon
+    - sensor.yw_day0_condition
+    - sensor.yw_day0_temperature_max
+    - sensor.yw_day0_temperature_min
+meteo_1:
+  name: Demain
+  view: false
+  icon: mdi:camera
+  entities:
+    - sensor.yw_day1_condition
+    - sensor.yw_day1_temperature_max
+    - sensor.yw_day1_temperature_min
