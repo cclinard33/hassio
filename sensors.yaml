@@ -10,7 +10,7 @@
       28-80000003e85b: "Int."
   scan_interval: 300
 - platform: darksky
-  api_key: ea0f9adbb1b6e010b7c1ae76543334e3
+  api_key: !secret darksky_api_key
   forecast: [1]
   monitored_conditions:
     - icon
