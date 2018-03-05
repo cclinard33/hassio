@@ -10,11 +10,21 @@ sensor.yw_day0_condition:
   friendly_name: Condition
 sensor.yw_day0_temperature_max:
   friendly_name: Temperature max
-sensor.dark_sky_icon:
-  entity_picture: /static/images/darksky/{{ sensor.dark_sky_icon }}.svg
 calendar.poele:
   friendly_name: Calendrier
 binary_sensor.poele:
   friendly_name: Etat
 climate.thermo_poele:
   friendly_name: Thermostat
+sensor.dark_sky_icon:
+  hidden: true
+sensor.dark_sky_icon_1:
+  hidden: true
+sensor.dark_sky_daily_high_temperature:
+  friendly_name: Température Max.
+sensor.dark_sky_daily_high_temperature_1:
+  friendly_name: Température Max.
+sensor.dark_sky_daily_low_temperature:
+  friendly_name: Température Min.
+sensor.dark_sky_daily_low_temperature_1:
+  friendly_name: Température Min.

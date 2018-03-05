@@ -12,15 +12,14 @@ meteo_0:
   view: false
   icon: mdi:camera
   entities:
-    - sensor.dark_sky_icon
-    - sensor.yw_day0_condition
-    - sensor.yw_day0_temperature_max
-    - sensor.yw_day0_temperature_min
+    - sensor.today_meteo
+    - sensor.dark_sky_daily_high_temperature
+    - sensor.dark_sky_daily_low_temperature
 meteo_1:
   name: Demain
   view: false
   icon: mdi:camera
   entities:
-    - sensor.yw_day1_condition
-    - sensor.yw_day1_temperature_max
-    - sensor.yw_day1_temperature_min
+    - sensor.demain_meteo
+    - sensor.dark_sky_daily_high_temperature_1
+    - sensor.dark_sky_daily_low_temperature_1

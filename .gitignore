@@ -1,5 +1,10 @@
-*
+/*
+*.pyc
+!/www/
+!/custom_components/
 !*.yaml
 !.gitignore
+!*.png
+!*.svg
 secrets.yaml
 known_devices.yaml

@@ -63,8 +63,15 @@ sun:
 tts:
   - platform: google
 
+recorder:
+
 # Cloud
 # cloud:
+
+media_player:
+  - platform: samsungtv
+    host: 192.168.1.88
+    mac: 84:a4:66:61:75:df
 
 rest_command:
   poele_on:
@@ -78,6 +85,23 @@ binary_sensor:
     name: "Poele"
     value_template: '{{ value_json.state }}'
     scan_interval: 60
+
+input_boolean:
+  poele_on:
+    name: Poele is on
+    icon: mdi:fire
+  poele_regulation:
+    name: Poele is in regulation mode
+    icon: mdi:waves
+
+input_select:
+  poele_state:
+    name: Etat Poêle
+    options:
+     - heat
+     - standby
+     - regulation
+    icon: mdi:stove
 
 switch:
   - platform: template
@@ -98,21 +122,49 @@ google:
   client_id: !secret google_id
   client_secret: !secret google_secret
 
+# climate:
+#  - platform: generic_thermostat
+#    name: thermo_poele
+#    heater: switch.poele
+#    target_sensor: sensor.int_temperature
+#    min_temp: 12
+#    max_temp: 24
+#    ac_mode: False
+#    target_temp: 17
+#    cold_tolerance: 0.2
+#    hot_tolerance: 0.1
+#    min_cycle_duration:
+#      hours: 1
+#    initial_operation_mode: "off"
+#    away_temp: 7
+
+logger:
+  default: warn
+  logs:
+    custom_components.climate.ccl_thermostat: debug
+
 climate:
-  - platform: generic_thermostat
+  - platform: ccl_thermostat
     name: thermo_poele
     heater: switch.poele
     target_sensor: sensor.int_temperature
+    heat: input_boolean.poele_on
+    regulation: input_boolean.poele_regulation
+    state: input_select.poele_state
     min_temp: 12
     max_temp: 24
-    ac_mode: False
+    ac_mode: False  
     target_temp: 17
-    cold_tolerance: 0.2
+    cold_tolerance: 0.5
     hot_tolerance: 0.1
     min_cycle_duration:
       hours: 1
     initial_operation_mode: "off"
     away_temp: 7
+    regulation_duration:
+      minutes: 1
+    regulation_nb_duration: 12
+    regulation_delta: 1
 
 group: !include groups.yaml
 automation: !include automations.yaml
