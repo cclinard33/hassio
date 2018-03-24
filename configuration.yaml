@@ -154,3 +154,4 @@ group: !include groups.yaml
 automation: !include automations.yaml
 script: !include scripts.yaml
 sensor: !include sensors.yaml
+google_assistant: !include google_assistant.yaml
