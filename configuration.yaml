@@ -124,8 +124,8 @@ google:
 
 logger:
   default: warn
-  #logs:
-    #custom_components.climate.ccl_thermostat: debug
+  logs:
+    custom_components.climate.ccl_thermostat: debug
 
 climate:
   - platform: ccl_thermostat

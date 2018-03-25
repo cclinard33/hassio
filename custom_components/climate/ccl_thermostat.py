@@ -429,9 +429,9 @@ class CCLGenericThermostat(ClimateDevice):
                     _LOGGER.debug("Min cycle duration not reach for heater %s", self._heat_entity_id)
                     return
 
-        set_heating_mode(next_state)
+        self._set_heating_mode(next_state)
 
-    def set_heating_mode(self, heating_mode):
+    def _set_heating_mode(self, heating_mode):
         """Set heating mode."""
         if heating_mode == STATE_HEAT:
             _LOGGER.info("Turning on heater %s", self._heat_entity_id)
