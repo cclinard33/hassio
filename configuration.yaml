@@ -71,6 +71,7 @@ recorder:
 media_player:
   - platform: samsungtv
     host: 192.168.1.88
+    port: 8001
     mac: 84:a4:66:61:75:df
 
 rest_command:
