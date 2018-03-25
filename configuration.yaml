@@ -140,7 +140,7 @@ climate:
     ac_mode: False  
     target_temp: 17
     cold_tolerance: 0.5
-    hot_tolerance: 0.1
+    hot_tolerance: 0.3
     min_cycle_duration:
       hours: 1
     initial_operation_mode: "off"

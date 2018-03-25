@@ -89,6 +89,9 @@ def async_setup_platform(hass, config, async_add_devices, discovery_info=None):
     name = config.get(CONF_NAME)
     heater_entity_id = config.get(CONF_HEATER)
     sensor_entity_id = config.get(CONF_SENSOR)
+    heat_entity_id = config.get(CONF_HEAT)
+    regulation_entity_id = config.get(CONF_REGULATION)
+    state_entity_id = config.get(CONF_STATE)
     min_temp = config.get(CONF_MIN_TEMP)
     max_temp = config.get(CONF_MAX_TEMP)
     target_temp = config.get(CONF_TARGET_TEMP)
@@ -102,9 +105,6 @@ def async_setup_platform(hass, config, async_add_devices, discovery_info=None):
     regulation_delta = config.get(CONF_REGULATION_DELTA)
     initial_operation_mode = config.get(CONF_INITIAL_OPERATION_MODE)
     away_temp = config.get(CONF_AWAY_TEMP)
-    heat_entity_id = config.get(CONF_HEAT)
-    regulation_entity_id = config.get(CONF_REGULATION)
-    state_entity_id = config.get(CONF_STATE)
 
     async_add_devices([CCLGenericThermostat(
         hass, name, heater_entity_id, sensor_entity_id, min_temp, max_temp,
@@ -387,45 +387,28 @@ class CCLGenericThermostat(ClimateDevice):
             return
 
         next_state = self._current_operation
-        if self.ac_mode:
-            is_cooling = self._is_device_active
-            if is_cooling:
-                too_cold = self._target_temp - self._cur_temp >= \
-                    self._cold_tolerance
-                if too_cold:
-                    next_state = STATE_OFF
-                else:
-                    next_state = STATE_ON
+        is_heating = self._is_device_active
+        if is_heating:
+            too_hot = self._cur_temp - self._target_temp >= \
+                self._hot_tolerance
+            if too_hot:
+                next_state = STATE_STANDBY
             else:
-                too_hot = self._cur_temp - self._target_temp >= \
-                    self._hot_tolerance
-                if too_hot:
-                    next_state = STATE_ON
-                else:
-                    next_state = STATE_OFF
-        else:
-            is_heating = self._is_device_active
-            if is_heating:
-                too_hot = self._cur_temp - self._target_temp >= \
-                    self._hot_tolerance
-                if too_hot:
-                    next_state = STATE_OFF
-                else:
-                    _LOGGER.debug("Evaluate regulation mode for heater %s",
-                                    self.heater_entity_id)
-                    regulation_mode = self._cur_temp >= \
+                _LOGGER.debug("Evaluate regulation mode for heater %s",
+                                self.heater_entity_id)
+                regulation_mode = self._cur_temp >= \
                     self._target_temp - self._regulation_delta
-                    if regulation_mode and not self._is_in_regulation:
-                        next_state = STATE_REGULATION
-                    else:
-                        next_state = STATE_ON
-            else:
-                too_cold = self._target_temp - self._cur_temp >= \
-                    self._cold_tolerance
-                if too_cold:
-                    next_state = STATE_ON
+                if regulation_mode:
+                    next_state = STATE_REGULATION
                 else:
-                    next_state = STATE_OFF
+                    next_state = STATE_HEAT
+        else:
+            too_cold = self._target_temp - self._cur_temp >= \
+                self._cold_tolerance
+            if too_cold:
+                next_state = STATE_HEAT
+            else:
+                next_state = STATE_STANDBY
         
         _LOGGER.debug("Next state for heater %s : %s", self.heater_entity_id, next_state)
         if self.min_cycle_duration:
@@ -433,7 +416,7 @@ class CCLGenericThermostat(ClimateDevice):
                 current_state = STATE_ON
             else:
                 current_state = STATE_OFF
-            if next_state == STATE_OFF:
+            if next_state == STATE_STANDBY:
                 next_current_state = STATE_OFF
             else:
                 next_current_state = STATE_ON
@@ -443,40 +426,43 @@ class CCLGenericThermostat(ClimateDevice):
                     self.hass, self._heat_entity_id, current_state,
                     self.min_cycle_duration)
                 if not long_enough:
-                    _LOGGER.debug("Min cycle duration not reach for heater %s", self.heater_entity_id)
+                    _LOGGER.debug("Min cycle duration not reach for heater %s", self._heat_entity_id)
                     return
 
-        if next_state ==  STATE_OFF:
-            _LOGGER.info("Turning off heater %s",
-                                 self.heater_entity_id)
-            self._heat_turn_off()
-            self._regulation_turn_off()
-            self._state_select(STATE_STANDBY)
-            self._heater_turn_off()
-        elif next_state ==  STATE_ON:
-            _LOGGER.info("Turning on heater %s", self.heater_entity_id)
+        set_heating_mode(next_state)
+
+    def set_heating_mode(self, heating_mode):
+        """Set heating mode."""
+        if heating_mode == STATE_HEAT:
+            _LOGGER.info("Turning on heater %s", self._heat_entity_id)
             self._heat_turn_on()
             self._regulation_turn_off()
-            self._state_select(STATE_HEAT)
+            self._state_select(heating_mode)
             self._heater_turn_on()
-        elif next_state ==  STATE_REGULATION:
-            _LOGGER.info("Turning heater %s in regulation mode",
-                                    self.heater_entity_id)
+        elif heating_mode == STATE_REGULATION:
+            _LOGGER.info("Turning heater %s on regulation", self._heat_entity_id)
             self._heat_turn_on()
             self._regulation_turn_on()
-            self._state_select(STATE_REGULATION)
+            self._state_select(heating_mode)
+            self._heater_turn_on()
+        elif heating_mode == STATE_STANDBY:
+            _LOGGER.info("Turning heater %s on standby",
+                                 self._heat_entity_id)
+            self._heat_turn_off()
+            self._regulation_turn_off()
+            self._state_select(heating_mode)
             self._heater_turn_off()
         else:
-            _LOGGER.error("Unrecognized state: %s for heater %s", next_state, self.heater_entity_id)
-            
+            _LOGGER.error("Unrecognized heating mode: %s", heating_mode)
+            return
+        # Ensure we update the current operation after changing the mode
+        self.schedule_update_ha_state()
+
     @property
     def _is_device_active(self):
         """If the toggleable device is currently active."""
         #return self.hass.states.is_state(self.heater_entity_id, STATE_ON)
-        if self._is_in_regulation:
-            return True
-        else:
-            return self.hass.states.is_state(self.heater_entity_id, STATE_ON)
+        return self.hass.states.is_state(self._heat_entity_id, STATE_ON)
     
     @property
     def _is_in_regulation(self):
