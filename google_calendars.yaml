@@ -40,3 +40,17 @@
   - device_id: week_numbers
     name: Week Numbers
     track: false
+
+- cal_id: sdovuu2v9mq6lms2cj38i26g1k@group.calendar.google.com
+  entities:
+  - device_id: emploi_du_temps_ysaline_6e
+    ignore_availability: true
+    name: Emploi du temps Ysaline (6e)
+    track: false
+
+- cal_id: family02016577033529628694@group.calendar.google.com
+  entities:
+  - device_id: famille
+    ignore_availability: true
+    name: Famille
+    track: false

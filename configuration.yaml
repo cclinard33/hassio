@@ -127,6 +127,7 @@ logger:
   default: warn
   logs:
     custom_components.climate.ccl_thermostat: debug
+    climate.ccl_thermostat: debug
 
 climate:
   - platform: ccl_thermostat
@@ -150,9 +151,15 @@ climate:
       minutes: 1
     regulation_nb_duration: 12
     regulation_delta: 1
+    precision: 0.5
+
+#camera:
+#  - platform: ffmpeg
+#    input: -rtsp_transport tcp -i rtsp://192.168.1.92:8554/unicast
+#    name: Cam
 
 group: !include groups.yaml
 automation: !include automations.yaml
 script: !include scripts.yaml
 sensor: !include sensors.yaml
-google_assistant: !include google_assistant.yaml
+#google_assistant: !include google_assistant.yaml

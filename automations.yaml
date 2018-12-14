@@ -6,7 +6,7 @@
     service: climate.set_temperature
   - data:
       entity_id: climate.thermo_poele
-      operation_mode: 'heat'
+      operation_mode: heat
     service: climate.set_operation_mode
   alias: Allumage Poele
   condition:
@@ -41,3 +41,13 @@
   - platform: time
     minutes: /5
     seconds: 0
+- id: '1528019148640'
+  alias: Let's Encrypt Renewal
+  trigger:
+  - at: 00:00:00
+    platform: time
+  condition: []
+  action:
+  - data:
+      addon: core_letsencrypt
+    service: hassio.addon_restart
