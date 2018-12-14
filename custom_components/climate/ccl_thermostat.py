@@ -367,6 +367,7 @@ class CCLGenericThermostat(ClimateDevice, RestoreEntity):
 
     async def _async_control_heating(self, time=None, force=False):
         """Check if we need to turn heating on or off."""
+        _LOGGER.debug("Check if we need to turn heating on or off")
         async with self._temp_lock:
             if not self._active and None not in (self._cur_temp,
                                                  self._target_temp):
@@ -420,17 +421,17 @@ class CCLGenericThermostat(ClimateDevice, RestoreEntity):
                     if current_state != next_current_state:
                         _LOGGER.debug("State : %s since %s", self.hass.states.get(self._heat_entity_id).state, self.hass.states.get(self._heat_entity_id).last_changed)
                         long_enough = condition.state(
-                            self.hass, self.heater_entity_id, current_state,
+                            self.hass, self._heat_entity_id, current_state,
                             self.min_cycle_duration)
                         if not long_enough:
                             _LOGGER.debug("Min cycle duration not reach for heater %s", self._heat_entity_id)
                             return
 
-            self._async_set_heating_mode(next_state, time)
+            await self._async_set_heating_mode(next_state, time)
 
     async def _async_regulation(self, time=None):
         """Call at constant intervals for regulation purposes."""
-        _LOGGER.debug("Check regulation for heater %s",
+        _LOGGER.debug("Check if in regulation for heater %s",
                                     self.heater_entity_id)
         if self._is_in_regulation:
             _LOGGER.debug("Check regulation for heater %s",
@@ -448,29 +449,30 @@ class CCLGenericThermostat(ClimateDevice, RestoreEntity):
 
     async def _async_set_heating_mode(self, heating_mode, time):
         """Set heating mode."""
-        if self._is_device_active:
-            if heating_mode == STATE_HEAT:
-                _LOGGER.info("Turning on heater %s", self._heat_entity_id)
-                await self._async_heat_turn_on()
-                await self._async_regulation_turn_off()
-                await self._async_state_select(heating_mode)
-                await self._async_heater_turn_on()
-            elif heating_mode == STATE_REGULATION:
-                _LOGGER.info("Turning heater %s on regulation", self._heat_entity_id)
-                await self._async_heat_turn_on()
-                await self._async_regulation_turn_on()
-                await self._async_state_select(heating_mode)
-                await self._async_heater_turn_on()
-            elif heating_mode == STATE_STANDBY:
-                _LOGGER.info("Turning heater %s on standby",
-                                    self._heat_entity_id)
-                await self._async_heat_turn_off()
-                await self._async_regulation_turn_off()
-                await self._async_state_select(heating_mode)
-                await self._async_heater_turn_off()
-            else:
-                _LOGGER.error("Unrecognized heating mode: %s", heating_mode)
-                return
+        _LOGGER.debug("Set heating mode to %s", heating_mode)
+        #if self._is_device_active:
+        if heating_mode == STATE_HEAT:
+            _LOGGER.info("Turning on heater %s", self._heat_entity_id)
+            await self._async_heat_turn_on()
+            await self._async_regulation_turn_off()
+            await self._async_state_select(heating_mode)
+            await self._async_heater_turn_on()
+        elif heating_mode == STATE_REGULATION:
+            _LOGGER.info("Turning heater %s on regulation", self._heat_entity_id)
+            await self._async_heat_turn_on()
+            await self._async_regulation_turn_on()
+            await self._async_state_select(heating_mode)
+            await self._async_heater_turn_on()
+        elif heating_mode == STATE_STANDBY:
+            _LOGGER.info("Turning heater %s on standby",
+                                self._heat_entity_id)
+            await self._async_heat_turn_off()
+            await self._async_regulation_turn_off()
+            await self._async_state_select(heating_mode)
+            await self._async_heater_turn_off()
+        else:
+            _LOGGER.error("Unrecognized heating mode: %s", heating_mode)
+            return
 
     @property
     def _is_device_active(self):

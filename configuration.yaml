@@ -126,7 +126,7 @@ google:
 logger:
   default: warn
   logs:
-    custom_components.climate.ccl_thermostat: debug
+    custom_components.climate.ccl_thermostat: info
 
 climate:
   - platform: ccl_thermostat
@@ -150,9 +150,10 @@ climate:
       minutes: 1
     regulation_nb_duration: 12
     regulation_delta: 1
+    precision: 0.5
 
 group: !include groups.yaml
 automation: !include automations.yaml
 script: !include scripts.yaml
 sensor: !include sensors.yaml
-google_assistant: !include google_assistant.yaml
+#google_assistant: !include google_assistant.yaml
