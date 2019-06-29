@@ -24,6 +24,7 @@ config:
 
 http:
   base_url: https://home.naniecuisine.com:8123
+  ssl_profile: intermediate
   api_password: !secret http_password
   ssl_certificate: /ssl/fullchain.pem
   ssl_key: /ssl/privkey.pem
@@ -59,12 +60,16 @@ map:
 # Track the sun
 sun:
 
+system_health:
+
 # Text to speech
 tts:
-  - platform: google
+  - platform: google_translate
+    service_name: google_say
 
 recorder:
   db_url: mysql://hass:hatev938@core-mariadb/homeassistant
+  
 # Cloud
 # cloud:
 
@@ -126,11 +131,11 @@ google:
 logger:
   default: warn
   logs:
-    custom_components.climate.ccl_thermostat: debug
-    climate.ccl_thermostat: debug
+    custom_components.climate.ccl_thermostat: warn
+    climate.ccl_thermostat: warn
 
 climate:
-  - platform: ccl_thermostat
+  - platform: climate_ccl
     name: thermo_poele
     heater: switch.poele
     target_sensor: sensor.int_temperature
@@ -157,6 +162,12 @@ climate:
 #  - platform: ffmpeg
 #    input: -rtsp_transport tcp -i rtsp://192.168.1.92:8554/unicast
 #    name: Cam
+
+meteo_france:
+  - city: '33127'
+    monitored_conditions:
+        - temperature
+        - weather
 
 group: !include groups.yaml
 automation: !include automations.yaml

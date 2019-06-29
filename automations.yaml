@@ -1,4 +1,18 @@
-- action:
+- id: on_poele_by_calendar
+  alias: Allumage Poele
+  trigger:
+  - entity_id: calendar.poele
+    from: 'off'
+    platform: state
+    to: 'on'
+  - minutes: /5
+    platform: time_pattern
+    seconds: '0'
+  condition:
+  - condition: state
+    entity_id: calendar.poele
+    state: 'on'
+  action:
   - data_template:
       entity_id: climate.thermo_poele
       temperature: '{{ states.calendar.poele.attributes.message | replace(" #heat","")
@@ -8,39 +22,25 @@
       entity_id: climate.thermo_poele
       operation_mode: heat
     service: climate.set_operation_mode
-  alias: Allumage Poele
-  condition:
-  - condition: state
-    entity_id: calendar.poele
-    state: 'on'
-  id: on_poele_by_calendar
-  trigger:
-  - entity_id: calendar.poele
-    from: 'off'
-    platform: state
-    to: 'on'
-  - minutes: /5
-    platform: time
-    seconds: 0
-- action:
-  - data:
-      entity_id: climate.thermo_poele
-      operation_mode: 'off'
-    service: climate.set_operation_mode
+- id: off_poele_by_calendar
   alias: Extinction Poele
-  condition:
-  - condition: state
-    entity_id: calendar.poele
-    state: 'off'
-  id: off_poele_by_calendar
   trigger:
   - entity_id: calendar.poele
     from: 'on'
     platform: state
     to: 'off'
-  - platform: time
-    minutes: /5
-    seconds: 0
+  - minutes: /5
+    platform: time_pattern
+    seconds: '0'
+  condition:
+  - condition: state
+    entity_id: calendar.poele
+    state: 'off'
+  action:
+  - data:
+      entity_id: climate.thermo_poele
+      operation_mode: 'off'
+    service: climate.set_operation_mode
 - id: '1528019148640'
   alias: Let's Encrypt Renewal
   trigger:

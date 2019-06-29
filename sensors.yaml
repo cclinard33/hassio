@@ -11,11 +11,12 @@
   scan_interval: 300
 - platform: darksky
   api_key: !secret darksky_api_key
-  forecast: [1]
+  forecast: 
+    - 1
   monitored_conditions:
     - icon
-    - temperature_max
-    - temperature_min
+    - temperature_high
+    - temperature_low
 - platform: template
   sensors:
     today_meteo:

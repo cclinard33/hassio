@@ -1,0 +1,11 @@
+{
+    "domain": "climate_ccl",
+    "name": "CCL thermostat",
+    "documentation": "https://www.home-assistant.io/components/generic_thermostat",
+    "requirements": [],
+    "dependencies": [
+      "sensor",
+      "switch"
+    ],
+    "codeowners": []
+  }

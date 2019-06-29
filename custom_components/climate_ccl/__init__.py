@@ -1,0 +1,1 @@
+"""The Climate CCL integration."""

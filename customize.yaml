@@ -22,9 +22,11 @@ sensor.dark_sky_icon_1:
   hidden: true
 sensor.dark_sky_daily_high_temperature:
   friendly_name: Température Max.
-sensor.dark_sky_daily_high_temperature_1:
+sensor.dark_sky_daytime_high_temperature_1d:
   friendly_name: Température Max.
 sensor.dark_sky_daily_low_temperature:
   friendly_name: Température Min.
-sensor.dark_sky_daily_low_temperature_1:
+sensor.dark_sky_overnight_low_temperature_1d:
   friendly_name: Température Min.
+sensor.martignas_sur_jalle_temperature:
+  friendly_name: Température

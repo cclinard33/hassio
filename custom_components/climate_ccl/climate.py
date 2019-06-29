@@ -8,26 +8,24 @@ import logging
 
 import voluptuous as vol
 
-from homeassistant.core import callback
-from homeassistant.core import DOMAIN as HA_DOMAIN
-from homeassistant.components.climate import (
-    STATE_HEAT, STATE_COOL, STATE_IDLE, STATE_AUTO, ClimateDevice,
-    ATTR_OPERATION_MODE, ATTR_AWAY_MODE, SUPPORT_OPERATION_MODE,
-    SUPPORT_AWAY_MODE, SUPPORT_TARGET_TEMPERATURE, PLATFORM_SCHEMA)
 from homeassistant.const import (
-    STATE_ON, STATE_OFF, ATTR_TEMPERATURE, CONF_NAME, ATTR_ENTITY_ID,
-    SERVICE_TURN_ON, SERVICE_TURN_OFF, STATE_UNKNOWN, PRECISION_HALVES,
-    PRECISION_TENTHS, PRECISION_WHOLE,
-    SERVICE_SELECT_OPTION, ATTR_OPTION)
+    ATTR_ENTITY_ID, ATTR_TEMPERATURE, CONF_NAME, PRECISION_HALVES,
+    PRECISION_TENTHS, PRECISION_WHOLE, SERVICE_TURN_OFF, SERVICE_TURN_ON,
+    STATE_OFF, STATE_ON, STATE_UNKNOWN)
+from homeassistant.core import DOMAIN as HA_DOMAIN, callback
 from homeassistant.helpers import condition
+import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.event import (
     async_track_state_change, async_track_time_interval)
-import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.restore_state import RestoreEntity
 
-_LOGGER = logging.getLogger(__name__)
+from homeassistant.components.climate import PLATFORM_SCHEMA, ClimateDevice
+from homeassistant.components.climate.const import (
+    ATTR_AWAY_MODE, ATTR_OPERATION_MODE, STATE_AUTO, STATE_COOL, STATE_HEAT,
+    STATE_IDLE, SUPPORT_AWAY_MODE, SUPPORT_OPERATION_MODE,
+    SUPPORT_TARGET_TEMPERATURE)
 
-DEPENDENCIES = ['switch', 'sensor']
+_LOGGER = logging.getLogger(__name__)
 
 DEFAULT_TOLERANCE = 0.3
 DEFAULT_NAME = 'CCL Generic Thermostat'
@@ -178,7 +176,7 @@ class CCLGenericThermostat(ClimateDevice, RestoreEntity):
         if self._keep_alive:
             async_track_time_interval(
                 hass, self._async_control_heating, self._keep_alive)
-        
+
         sensor_state = hass.states.get(sensor_entity_id)
         if sensor_state and sensor_state.state != STATE_UNKNOWN:
             self._async_update_temp(sensor_state)
@@ -402,7 +400,7 @@ class CCLGenericThermostat(ClimateDevice, RestoreEntity):
                     next_state = STATE_HEAT
                 else:
                     next_state = STATE_STANDBY
-            _LOGGER.debug("Next state for heater %s : %s", self.heater_entity_id, next_state)
+            _LOGGER.debug("Next state for heater %s : %s (force: %s, time: %s)", self.heater_entity_id, next_state, force, time)
 
             if not force and time is None:
                 # If the `force` argument is True, we
@@ -431,7 +429,7 @@ class CCLGenericThermostat(ClimateDevice, RestoreEntity):
 
     async def _async_regulation(self, time=None):
         """Call at constant intervals for regulation purposes."""
-        _LOGGER.debug("Check regulation for heater %s",
+        _LOGGER.debug("Check if in regulation for heater %s",
                                     self.heater_entity_id)
         if self._is_in_regulation:
             _LOGGER.debug("Check regulation for heater %s",
@@ -441,11 +439,11 @@ class CCLGenericThermostat(ClimateDevice, RestoreEntity):
                 _LOGGER.debug("Regulation tick for heater %s",
                                     self.heater_entity_id)
                 self._nb_tick_regulation = 0
-                self._heater_turn_on()
+                await self._async_heater_turn_on()
             else:
                 _LOGGER.debug("Regulation untick for heater %s",
                                     self.heater_entity_id)
-                self._heater_turn_off()
+                await self._async_heater_turn_off()
 
     async def _async_set_heating_mode(self, heating_mode, time):
         """Set heating mode."""
