@@ -30,3 +30,8 @@ sensor.dark_sky_overnight_low_temperature_1d:
   friendly_name: Température Min.
 sensor.martignas_sur_jalle_temperature:
   friendly_name: Température
+group.meteo_1:
+  entity_id:
+  - sensor.demain_meteo
+  - sensor.dark_sky_daytime_high_temperature_1d
+  - sensor.dark_sky_overnight_low_temperature_1d

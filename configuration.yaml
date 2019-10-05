@@ -131,9 +131,8 @@ google:
 logger:
   default: warn
   logs:
-    custom_components.climate.ccl_thermostat: warn
-    climate.ccl_thermostat: warn
-
+    custom_components.climate_ccl.climate: debug
+    
 climate:
   - platform: climate_ccl
     name: thermo_poele
@@ -148,9 +147,9 @@ climate:
     target_temp: 17
     cold_tolerance: 0.5
     hot_tolerance: 0.3
+    initial_hvac_mode: "off"
     min_cycle_duration:
       hours: 1
-    initial_operation_mode: "off"
     away_temp: 7
     regulation_duration:
       minutes: 1

@@ -20,8 +20,8 @@
     service: climate.set_temperature
   - data:
       entity_id: climate.thermo_poele
-      operation_mode: heat
-    service: climate.set_operation_mode
+      hvac_mode: heat
+    service: climate.set_hvac_mode
 - id: off_poele_by_calendar
   alias: Extinction Poele
   trigger:
@@ -39,8 +39,8 @@
   action:
   - data:
       entity_id: climate.thermo_poele
-      operation_mode: 'off'
-    service: climate.set_operation_mode
+      hvac_mode: 'off'
+    service: climate.set_hvac_mode
 - id: '1528019148640'
   alias: Let's Encrypt Renewal
   trigger:
